@@ -17,7 +17,53 @@
  *  ]
  */
 function createCompassPoints() {
-    var sides = ['N','E','S','W'];  // use array of cardinal directions only!
+    let sides = ['N','E','S','W'];  // use array of cardinal directions only!
+    let interval = 11.25;
+    let currentAzimuth = 0.00;
+    let res = [];
+
+    const getQuarter = (start, curr, next, coordinateFunction) => {
+
+        currentAzimuth = start;
+
+        let points = [];
+
+        const addPoint = (pointName, changeFunction) => {
+            points.push({ abbreviation: pointName, azimuth: currentAzimuth });
+            changeFunction();
+        };
+
+        addPoint(curr + 'b' + next, coordinateFunction);
+        addPoint(curr + curr + next, coordinateFunction);
+        addPoint(curr + next + 'b' + curr, coordinateFunction);
+        addPoint(curr + next, coordinateFunction);
+        addPoint(curr + next + 'b' + next, coordinateFunction);
+        addPoint(next + curr + next, coordinateFunction);
+        addPoint(next + 'b' + curr, coordinateFunction);
+
+        return points;
+
+    };
+
+    res.push({ abbreviation: 'N', azimuth: 0.00 });
+    res = res.concat(getQuarter(0.00 + interval, 'N', 'E', function () {
+        currentAzimuth += interval;
+    }));
+    res.push({ abbreviation: 'E', azimuth: 90.00 });
+    res = res.concat(getQuarter(180.00 - interval, 'S', 'E', function () {
+        currentAzimuth -= interval;
+    }).reverse());
+    res.push({ abbreviation: 'S', azimuth: 180.00 });
+    res = res.concat(getQuarter(180.00 + interval, 'S', 'W', function () {
+        currentAzimuth += interval;
+    }));
+    res.push({ abbreviation: 'W', azimuth: 270.00 });
+    res = res.concat(getQuarter(360.00 - interval, 'N', 'W', function () {
+        currentAzimuth -= interval;
+    }).reverse());
+    
+    return res;
+
 }
 
 
