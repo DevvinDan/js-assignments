@@ -28,7 +28,107 @@
  *   'NULL'      => false 
  */
 function findStringInSnakingPuzzle(puzzle, searchStr) {
-    throw new Error('Not implemented');
+
+    let len = searchStr.length;
+
+    let rows = puzzle.length;
+    let columns = puzzle[0].length;
+    let indicies = [];
+
+    for (let i = 0; i < rows; i++){
+        if (typeof puzzle[i] === 'string'){
+            puzzle[i] = puzzle[i].split('');
+        }
+        for (let j = 0; j < columns; j++){
+            if (puzzle[i][j] === searchStr[0]){
+                indicies.push([[i, j]]);
+            }
+        }
+    }
+
+
+    let current = 1;
+
+    while (current < len && indicies.length > 0){
+        let newIndicies = [];
+        indicies.forEach((chain) => {
+            let last = chain[chain.length - 1];
+            let i = last[0];
+            let j = last[1];
+
+            // Check surrounding symbols
+
+            if ((puzzle[i + 1] !== undefined) && (puzzle[i + 1][j] === searchStr[current])){
+                let found = false;
+                chain.forEach((pair) => {
+                    if (pair === [i + 1, j]){
+                        found = true;
+                    }
+                });
+                if (!found){
+                    let newChain = chain;
+                    newChain.push([i + 1, j]);
+                    newIndicies.push(newChain);
+                }
+            }
+
+            if ((i - 1 > 0) && puzzle[i - 1][j] === searchStr[current]){
+                let found = false;
+                chain.forEach((pair) => {
+                    if (pair === [i - 1, j]){
+                        found = true;
+                    }
+                });
+                if (!found){
+                    let newChain = chain;
+                    newChain.push([i - 1, j]);
+                    newIndicies.push(newChain);
+                }
+            }
+
+            if (puzzle[i][j + 1] !== undefined && puzzle[i][j + 1] === searchStr[current]){
+                let found = false;
+                chain.forEach((pair) => {
+                    if (pair === [i, j + 1]){
+                        found = true;
+                    }
+                });
+                if (!found){
+                    let newChain = chain;
+                    newChain.push([i, j + 1]);
+                    newIndicies.push(newChain);
+                }
+            }
+
+            if ((j - 1 > 0) && puzzle[i][j - 1] === searchStr[current]){
+                let found = false;
+                chain.forEach((pair) => {
+                   if (pair === [i, j - 1]){
+                       found = true;
+                   }
+                });
+                if (!found){
+                    let newChain = chain;
+                    newChain.push([i, j - 1]);
+                    newIndicies.push(newChain);
+                }
+            }
+
+        });
+
+        indicies = newIndicies;
+
+        if (indicies.length > 0){
+            current++;
+        }
+    }
+
+    if (current === len){
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
 

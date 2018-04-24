@@ -61,7 +61,7 @@ function createCompassPoints() {
     res = res.concat(getQuarter(360.00 - interval, 'N', 'W', function () {
         currentAzimuth -= interval;
     }).reverse());
-    
+
     return res;
 
 }
@@ -101,7 +101,33 @@ function createCompassPoints() {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-    throw new Error('Not implemented');
+    let expanded = [str];
+    let bracketsRegex = new RegExp('\{[^\{\}]*?\}', 'g');
+
+    let hasFinished = false;
+    while (!hasFinished) {
+        hasFinished = true;
+        let newExpanded = [];
+
+        for (let string of expanded) {
+            let matches = string.match(bracketsRegex);
+            if (matches) {
+                hasFinished = false;
+                let options = matches[0].slice(1, -1).split(',');
+                for (let option of options) {
+                    newExpanded.push(string.replace(matches[0], option));
+                }
+            } else {
+                newExpanded.push(string);
+            }
+        }
+        expanded = newExpanded;
+    }
+    expanded = [...new Set(expanded)];
+
+    for (let string of expanded) {
+        yield string;
+    }
 }
 
 
@@ -133,8 +159,39 @@ function* expandBraces(str) {
  *          [ 9,10,14,15 ]]
  *
  */
+
 function getZigZagMatrix(n) {
-    throw new Error('Not implemented');
+    let result = Array.from({length: n}, () => Array.from({length: n}, () => 0));
+    let num_of_values = Math.pow(n, 2);
+    let i = 0; let j = 0;
+    for (let value = 0; value < num_of_values; value++){
+        result[i][j] = value;
+        if (((i + j) % 2) !== 0){
+            if (i === n - 1){
+                j++;
+            } else {
+                if (j === 0){
+                    i++;
+                } else {
+                    j--;
+                    i++;
+                }
+            }
+        } else {
+            if (j === n - 1){
+                i++;
+            } else {
+                if (i === 0){
+                    j++;
+                } else {
+                    j++;
+                    i--;
+                }
+            }
+        }
+
+    }
+    return result;
 }
 
 
@@ -159,7 +216,24 @@ function getZigZagMatrix(n) {
  *
  */
 function canDominoesMakeRow(dominoes) {
-    throw new Error('Not implemented');
+    const result = [0];
+    result[0] = dominoes.shift();
+
+    let lastLength = 0;
+    while (lastLength != dominoes.length && dominoes.length > 0) {
+        lastLength = dominoes.length;
+        for (let i = 0; i < dominoes.length; i++) {
+            if (result[result.length - 1][1] == dominoes[i][0] && result[result.length - 1][0] != dominoes[i][1]) {
+                result[result.length] = dominoes[i];
+                dominoes.splice(i, 1);
+            } else if (result[result.length - 1][1] == dominoes[i][1] && result[result.length - 1][0] != dominoes[i][1]) {
+                result[result.length] = dominoes[i].reverse();
+                dominoes.splice(i, 1);
+            }
+        }
+    };
+
+    return dominoes.length == 0;
 }
 
 
@@ -183,7 +257,22 @@ function canDominoesMakeRow(dominoes) {
  * [ 1, 2, 4, 5]          => '1,2,4,5'
  */
 function extractRanges(nums) {
-    throw new Error('Not implemented');
+    let index = 0;
+    let res = '';
+    while (index < nums.length){
+        let size = 1;
+        while (nums[index + size - 1] + 1 === nums[index + size]){
+            size += 1;
+        }
+        if (size > 2){
+            res += nums[index] + '-' + nums[index + size - 1] + ',';
+            index += size;
+        } else {
+            res = res + nums[index] + ',';
+            index += 1;
+        }
+    }
+    return res.slice(0, res.length - 1);
 }
 
 module.exports = {
