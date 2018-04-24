@@ -145,7 +145,26 @@ function findStringInSnakingPuzzle(puzzle, searchStr) {
  *    'abc' => 'abc','acb','bac','bca','cab','cba'
  */
 function* getPermutations(chars) {
-    throw new Error('Not implemented');
+    function permute(chars) {
+        let permutations = [];
+        if (chars.length === 1) {
+            return chars;
+        } else if (chars.length === 2) {
+            return [chars, chars[1] + chars[0]];
+        } else {
+            (chars.split('')).forEach((character, index, array) => {
+                let sub = [].concat(array);
+                sub.splice(index, 1);
+                permute(sub.join('')).forEach((permutation) => permutations.push(character + permutation));
+            })
+        }
+        return permutations;
+    }
+
+    for (let permutation of permute(chars)){
+        yield permutation;
+    }
+
 }
 
 
@@ -165,7 +184,24 @@ function* getPermutations(chars) {
  *    [ 1, 6, 5, 10, 8, 7 ] => 18  (купить по 1,6,5 и затем продать все по 10)
  */
 function getMostProfitFromStockQuotes(quotes) {
-    throw new Error('Not implemented');
+    let profit = 0;
+    let index = 0;
+    let count = 0;
+    while (quotes.length > 0){
+        while (quotes[index] !== Math.max.apply(Math, quotes)){
+            count += 1;
+            profit -= quotes[index];
+            index += 1;
+        }
+        if (quotes[index] === Math.max.apply(Math, quotes)){
+            profit += (count * quotes[index]);
+            quotes = quotes.slice(count + 1);
+            count = 0;
+            index = 0;
+        }
+    }
+
+    return profit;
 }
 
 
@@ -190,14 +226,23 @@ function UrlShortener() {
 }
 
 UrlShortener.prototype = {
-
     encode: function(url) {
-        throw new Error('Not implemented');
+        let s = url.split('')
+            .reduce((pv, cv) => pv + (this.urlAllowedChars.indexOf(cv) < 10 ? '0' : '') + this.urlAllowedChars.indexOf(cv), '');
+        let answer = '';
+        if (s.length % 4 !== 0) s += '99';
+        while (s.length > 0) {
+            answer += String.fromCharCode(s.slice(0, 4));
+            s = s.slice(4);
+        }
+        return answer;
     },
-    
+
     decode: function(code) {
-        throw new Error('Not implemented');
-    } 
+        let answer = '';
+        return code.split('')
+            .reduce((pv, cv) => pv += this.urlAllowedChars[Math.floor(cv.charCodeAt(0) / 100)] + (cv.charCodeAt(0) % 100 !== 99 ? this.urlAllowedChars[cv.charCodeAt(0) % 100] : ''), '');
+    }
 }
 
 

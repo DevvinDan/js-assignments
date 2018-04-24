@@ -505,7 +505,6 @@ function getIdentityMatrix(n) {
     return arr.map((row, index) => {
         row.fill(0);
         row.splice(index, 1, 1);
-        console.log(row);
         return [].concat(row);
     });
 }
